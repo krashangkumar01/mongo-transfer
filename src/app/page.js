@@ -23,9 +23,10 @@ export default function Home() {
       const data = await res.json();
 
       if (data.success) {
+        // default select all
         setCollections(data.collections.map((name) => ({ name, selected: true })));
       } else {
-        alert("Error: " + data.message);
+        alert("Error: " + (data.message || "Unknown"));
       }
     } catch (err) {
       alert("Failed: " + err.message);
@@ -38,6 +39,14 @@ export default function Home() {
     setCollections((prev) =>
       prev.map((c) => (c.name === name ? { ...c, selected: !c.selected } : c))
     );
+  };
+
+  const selectAll = () => {
+    setCollections((prev) => prev.map((c) => ({ ...c, selected: true })));
+  };
+
+  const deselectAll = () => {
+    setCollections((prev) => prev.map((c) => ({ ...c, selected: false })));
   };
 
   const handleTransfer = async () => {
@@ -61,19 +70,25 @@ export default function Home() {
       const data = await res.json();
 
       if (data.success) {
+        // animate results in a professional sequential manner
         const total = data.results.length;
         data.results.forEach((col, i) => {
           setTimeout(() => {
             setStatuses((prev) => ({
               ...prev,
-              [col.name]: col.status,
+              [col.name]: { status: col.status, message: col.message || "", count: col.count || 0 },
             }));
             setProgress(Math.round(((i + 1) / total) * 100));
-          }, i * 600);
+          }, i * 450);
         });
-        setTimeout(() => setLoading(false), total * 700);
+
+        // ensure loading cleared after done
+        setTimeout(() => {
+          setLoading(false);
+          setProgress(100);
+        }, total * 480 + 200);
       } else {
-        alert("Error: " + data.message);
+        alert("Error: " + (data.message || "Unknown"));
         setLoading(false);
       }
     } catch (err) {
@@ -90,6 +105,8 @@ export default function Home() {
         return "bg-blue-100 text-blue-700 border-blue-300";
       case "empty":
         return "bg-yellow-100 text-yellow-700 border-yellow-300";
+      case "error":
+        return "bg-red-100 text-red-700 border-red-300";
       default:
         return "bg-gray-100 text-gray-500 border-gray-200";
     }
@@ -143,12 +160,31 @@ export default function Home() {
         {/* Collection List */}
         {collections.length > 0 && (
           <div className="mt-6 border-t pt-4">
-            <h2 className="text-lg font-semibold text-gray-700 mb-3">Select Collections</h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-gray-700">Select Collections</h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={selectAll}
+                  className="px-3 py-1 rounded-md bg-indigo-50 text-indigo-700 text-sm hover:bg-indigo-100"
+                >
+                  Select all
+                </button>
+                <button
+                  onClick={deselectAll}
+                  className="px-3 py-1 rounded-md bg-gray-50 text-gray-700 text-sm hover:bg-gray-100"
+                >
+                  Deselect all
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto">
               {collections.map((col) => (
                 <label
                   key={col.name}
-                  className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg border cursor-pointer hover:bg-gray-100 transition"
+                  className={`flex items-center space-x-2 p-2 rounded-lg border cursor-pointer hover:bg-gray-50 transition ${
+                    col.selected ? "bg-white" : "bg-gray-50"
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -192,25 +228,47 @@ export default function Home() {
         <div className="mt-8 grid grid-cols-1 gap-3">
           {collections
             .filter((c) => c.selected)
-            .map((col) => (
-              <div
-                key={col.name}
-                className={`flex justify-between items-center border rounded-lg px-4 py-2 ${getStatusColor(
-                  statuses[col.name]
-                )}`}
-              >
-                <span className="font-medium">{col.name}</span>
-                <span className="text-sm capitalize">
-                  {statuses[col.name]
-                    ? statuses[col.name] === "done"
-                      ? "✅ Done"
-                      : statuses[col.name] === "empty"
-                      ? "⚠️ Empty"
-                      : "⏳ Processing"
-                    : "Pending"}
-                </span>
-              </div>
-            ))}
+            .map((col) => {
+              const s = statuses[col.name];
+              const statusKey = s ? s.status : undefined;
+
+              return (
+                <div
+                  key={col.name}
+                  className={`flex flex-col sm:flex-row sm:justify-between items-start sm:items-center border rounded-lg px-4 py-3 ${getStatusColor(
+                    statusKey
+                  )}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">{col.name}</span>
+                    {s && s.count > 0 && (
+                      <span className="text-xs text-gray-500">{s.count} docs</span>
+                    )}
+                  </div>
+
+                  <div className="mt-2 sm:mt-0 text-sm text-right">
+                    {s ? (
+                      s.status === "done" ? (
+                        <span className="inline-flex items-center">✅ Done</span>
+                      ) : s.status === "empty" ? (
+                        <span className="inline-flex items-center">⚠️ Empty</span>
+                      ) : s.status === "processing" ? (
+                        <span className="inline-flex items-center">⏳ Processing</span>
+                      ) : s.status === "error" ? (
+                        <div className="text-red-700">
+                          <div>❌ Error</div>
+                          {s.message && <div className="text-xs text-red-600 mt-1">{s.message}</div>}
+                        </div>
+                      ) : (
+                        <span>Pending</span>
+                      )
+                    ) : (
+                      <span>Pending</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>
