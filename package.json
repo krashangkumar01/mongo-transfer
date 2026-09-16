@@ -2,6 +2,11 @@
   "name": "mongo-transfer",
   "version": "0.1.0",
   "private": true,
+  "author": "Krashang Kumar (https://www.linkedin.com/in/krashang-kumar)",
+  "type": "module",
+  "imports": {
+    "@/*": "./src/*"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
@@ -9,9 +14,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1133.0",
+    "@aws-sdk/lib-dynamodb": "^3.1133.0",
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.1",
+    "mssql": "^12.7.2",
+    "mysql2": "^3.24.4",
     "next": "15.5.9",
+    "pg": "^8.23.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },

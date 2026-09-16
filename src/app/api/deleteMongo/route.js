@@ -1,6 +1,14 @@
 import { MongoClient } from "mongodb";
+import { getFeatureStatus } from "@/lib/features.js";
 
 export async function POST(req) {
+  const features = getFeatureStatus();
+  if (!features.delete) {
+    return Response.json(
+      { error: true, message: "The Delete feature is currently disabled via environment configuration (ENABLE_DELETE=false)." },
+      { status: 403 }
+    );
+  }
   try {
     const { dbUri, target, name } = await req.json();
 

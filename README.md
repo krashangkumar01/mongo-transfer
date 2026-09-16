@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ⚡ Data Manager - Universal Database Migration, Backup & Management Engine
 
-## Getting Started
+A high-performance, universal multi-database management platform for transferring, converting, and taking snapshot backups across **PostgreSQL, MySQL, Microsoft SQL Server (MSSQL), Amazon DynamoDB, and MongoDB**.
 
-First, run the development server:
+---
+
+## 🌟 Key Features
+
+- **Any-to-Any Database Transfer**:
+  - Relational to Relational (e.g. PostgreSQL $\leftrightarrow$ MySQL, SQL Server $\leftrightarrow$ PostgreSQL)
+  - Document to Document (e.g. MongoDB $\leftrightarrow$ Amazon DynamoDB)
+  - Heterogeneous SQL $\leftrightarrow$ NoSQL migrations (e.g. MongoDB $\rightarrow$ PostgreSQL, MySQL $\rightarrow$ MongoDB, SQL Server $\rightarrow$ DynamoDB)
+- **Automatic Schema Inference & DDL Generation**:
+  - Automatically creates destination tables with inferred SQL types (`JSONB`, `JSON`, `VARCHAR`, `BIGINT`, `TIMESTAMPTZ`, etc.) when destination tables do not yet exist.
+- **🛡️ Pre-Transfer Snapshot Backups**:
+  - Safely creates a compressed NDJSON / Gzip (`.ndjson.gz`) snapshot backup of the destination or source database before executing migrations.
+- **💾 Dedicated Backup & Restore Hub**:
+  - Export full or partial table/collection backups.
+  - Stored backup history library with one-click download (`.tar.gz`) and cross-database restoration.
+- **🗑️ Universal Database Cleaner**:
+  - Drop or truncate tables/collections or drop entire databases with safeguards and double-confirmation.
+- **⚙️ Feature Toggles via Environment Variables**:
+  - Individually enable or disable Transfer, Backup, and Delete capabilities via `.env.local`.
+- **🔌 Built-in Connection Tester**:
+  - Instant ping, server version discovery, and latency measurement for all 5 database engines.
+
+---
+
+## 🚀 Supported Databases
+
+| Icon | Database | Engine Type | Default Port | Connection Options |
+| :--- | :--- | :--- | :--- | :--- |
+| 🐘 | **PostgreSQL** | Relational / SQL | `5432` | Connection URI or Host, Port, DB, User, Pass, SSL |
+| 🐬 | **MySQL** | Relational / SQL | `3306` | Connection URI or Host, Port, DB, User, Pass, SSL |
+| 🪟 | **SQL Server (MSSQL)** | Relational / SQL | `1433` | Connection String or Server, Port, DB, User, Pass, Encrypt |
+| ⚡ | **Amazon DynamoDB** | Document / NoSQL | `8000` (local) | Region, Access Key, Secret Key, Session Token, Custom Endpoint |
+| 🍃 | **MongoDB** | Document / NoSQL | `27017` | Connection URI (`mongodb://`, `mongodb+srv://`) or discrete fields |
+
+---
+
+## 🔧 Environment Configuration & Feature Toggles
+
+Control feature availability via `.env.local` or deployment environment variables:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# =======================================================
+# Data Manager Feature Toggles (true = enabled, false = disabled)
+# =======================================================
+
+# Enable/disable Transfer Engine
+ENABLE_TRANSFER=true
+NEXT_PUBLIC_ENABLE_TRANSFER=true
+
+# Enable/disable Backup & Restore Hub
+ENABLE_BACKUP=true
+NEXT_PUBLIC_ENABLE_BACKUP=true
+
+# Enable/disable Database Cleaner & Delete Tool
+ENABLE_DELETE=true
+NEXT_PUBLIC_ENABLE_DELETE=true
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+When a feature is set to `false`:
+- The corresponding navigation tab reflects the disabled status.
+- Dedicated user-facing warning banners are rendered in the UI.
+- All associated API routes (`/api/transfer`, `/api/backup`, `/api/db/manage`) reject requests with HTTP `403 Forbidden`.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Getting Started
 
-## Learn More
+### 1. Install Dependencies
+```bash
+npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Run the Development Server
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Production Build
+```bash
+npm run build
+npm run start
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 👨‍💻 Developer & Author
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Developed with ❤️ by **[Krashang Kumar](https://www.linkedin.com/in/krashang-kumar)**
+
+- **LinkedIn**: [krashang-kumar](https://www.linkedin.com/in/krashang-kumar)
+- **Project**: Data Manager - Universal Multi-Database Transfer & Backup Engine
